@@ -5,37 +5,20 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// 💾 قاعدة بيانات التصاريح (يمكنك إضافة أو تعديل البيانات هنا لإصدار أكثر من تصريح)
+// 💾 قاعدة بيانات التصاريح - يمكنك إضافة أو تعديل البيانات هنا بسهولة
 const permitsDatabase = {
     "1299": {
         id: "1299",
-        workerName: "محمد أحمد علي",
-        nationalId: "2450198234",
-        nationality: "مصري",
-        jobTitle: "مهندس تقنية معلومات",
-        facilityName: "شركة الحلول المتقدمة للمقاولات",
-        facilityCr: "1010892341",
-        issueDate: "2024-01-15",
-        expiryDate: "2025-01-14",
-        status: "ساري",
-        statusColor: "#28a745"
-    },
-    "1300": {
-        id: "1300",
-        workerName: "عبدالله خالد العتيبي",
-        nationalId: "1098234512",
-        nationality: "سعودي",
-        jobTitle: "مشرف مشروع",
-        facilityName: "مؤسسة البناء الحديث",
-        facilityCr: "1010567890",
-        issueDate: "2024-02-01",
-        expiryDate: "2025-01-31",
-        status: "ساري",
-        statusColor: "#28a745"
+        employeeName: "AHMED NASSER ABDELMONTTALEB ALI",
+        status: "نشط",
+        startDate: "2026-09-28",
+        endDate: "2027-03-27",
+        facilityName: "شركة الريادة الخليجية للمقاولات",
+        facilityId: "7033892717"
     }
 };
 
-// 1. صفحة التحقق من التصريح (مع عرض كافة العناصر والتفاصيل)
+// 1. صفحة عرض التحقق من تصريح أجير
 app.get('/verify', (req, res) => {
     const id = req.query.id || '1299';
     const permit = permitsDatabase[id];
@@ -44,9 +27,9 @@ app.get('/verify', (req, res) => {
         return res.status(404).send(`
             <!DOCTYPE html>
             <html lang="ar" dir="rtl">
-            <head><meta charset="UTF-8"><title>غير موجود</title></head>
+            <head><meta charset="UTF-8"><title>التصريح غير موجود</title></head>
             <body style="font-family: sans-serif; text-align: center; padding-top: 50px;">
-                <h2>⚠️ التصريح رقم (${id}) غير موجود أو ملغى.</h2>
+                <h2>⚠️️ التصريح رقم (${id}) غير موجود أو ملغى.</h2>
             </body>
             </html>
         `);
@@ -58,54 +41,178 @@ app.get('/verify', (req, res) => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>تفاصيل تصريح العمل - ${permit.id}</title>
+        <title>تصريح أجير لحلول الموارد البشرية</title>
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
         <style>
-          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }
-          .container { max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #e0e0e0; }
-          .header { background-color: #1a365d; color: white; padding: 20px; text-align: center; }
-          .header h2 { margin: 0; font-size: 22px; }
-          .header p { margin: 5px 0 0; font-size: 14px; color: #cbd5e0; }
-          .status-bar { background-color: ${permit.statusColor}; color: white; text-align: center; padding: 10px; font-weight: bold; font-size: 16px; }
-          .body-content { padding: 20px; }
-          .info-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-          .info-table th, .info-table td { padding: 12px 10px; text-align: right; border-bottom: 1px solid #edf2f7; }
-          .info-table th { background-color: #f7fafc; color: #4a5568; font-weight: 600; width: 35%; }
-          .info-table td { color: #2d3748; font-weight: 500; }
-          .footer { text-align: center; padding: 15px; background: #f7fafc; color: #718096; font-size: 12px; border-top: 1px solid #e2e8f0; }
+          * { box-sizing: border-box; }
+          body { 
+            font-family: 'Tajawal', sans-serif; 
+            background-color: #f8fafc; 
+            margin: 0; 
+            padding: 0; 
+            color: #1e293b;
+          }
+          .top-bar {
+            padding: 20px 40px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #f1f5f9;
+          }
+          .logo-text {
+            color: #0d233a;
+            font-weight: 700;
+            font-size: 24px;
+            letter-spacing: -0.5px;
+          }
+          .logo-sub {
+            font-size: 10px;
+            color: #00a884;
+            display: block;
+            margin-top: -5px;
+          }
+          .main-title {
+            text-align: center;
+            margin: 40px 0 30px;
+            color: #0f172a;
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.5;
+          }
+          .container {
+            max-width: 460px;
+            margin: 0 auto 50px;
+            padding: 0 15px;
+          }
+          .card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            border: 1px solid #f1f5f9;
+          }
+          .card-title {
+            text-align: center;
+            color: #64748b;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #f8fafc;
+            padding-bottom: 12px;
+          }
+          .field-group {
+            margin-bottom: 16px;
+            text-align: center;
+          }
+          .field-group:last-child {
+            margin-bottom: 0;
+          }
+          .label {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            display: block;
+          }
+          .value {
+            font-size: 15px;
+            color: #1e293b;
+            font-weight: 500;
+            direction: ltr;
+            display: inline-block;
+          }
+          .value-rtl {
+            font-size: 15px;
+            color: #1e293b;
+            font-weight: 500;
+          }
+          .badge-active {
+            background-color: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            padding: 4px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-block;
+          }
+          .help-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 42px;
+            height: 42px;
+            background-color: #1d3557;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            cursor: pointer;
+          }
         </style>
       </head>
       <body>
-        <div class="container">
-          <div class="header">
-            <h2>منصة التحقق من تصاريح العمل</h2>
-            <p>تفاصيل التصريح الإلكتروني المعتمد</p>
-          </div>
-          <div class="status-bar">
-            ✔ حالة التصريح: ${permit.status}
-          </div>
-          <div class="body-content">
-            <table class="info-table">
-              <tr><th>رقم التصريح</th><td>${permit.id}</td></tr>
-              <tr><th>اسم العامل</th><td>${permit.workerName}</td></tr>
-              <tr><th>رقم الهوية/الإقامة</th><td>${permit.nationalId}</td></tr>
-              <tr><th>الجنسية</th><td>${permit.nationality}</td></tr>
-              <tr><th>المهنة</th><td>${permit.jobTitle}</td></tr>
-              <tr><th>اسم المنشأة</th><td>${permit.facilityName}</td></tr>
-              <tr><th>رقم السجل التجاري</th><td>${permit.facilityCr}</td></tr>
-              <tr><th>تاريخ الإصدار</th><td>${permit.issueDate}</td></tr>
-              <tr><th>تاريخ الانتهاء</th><td>${permit.expiryDate}</td></tr>
-            </table>
-          </div>
-          <div class="footer">
-            تم التحقق من هذه البيانات إلكترونياً وهي صالحة للاستخدام الرسمي.
-          </div>
+
+        <div class="top-bar">
+          <div class="logo-text">أجير<span class="logo-sub">AJEER</span></div>
         </div>
+
+        <h2 class="main-title">تصريح أجير لحلول الموارد<br>البشرية</h2>
+
+        <div class="container">
+          
+          <!-- معلومات التصريح -->
+          <div class="card">
+            <div class="card-title">معلومات التصريح</div>
+            
+            <div class="field-group">
+              <span class="label">اسم الموظف:</span>
+              <span class="value">${permit.employeeName}</span>
+            </div>
+
+            <div class="field-group">
+              <span class="label">حالة التصريح:</span>
+              <div><span class="badge-active">${permit.status}</span></div>
+            </div>
+
+            <div class="field-group">
+              <span class="label">تاريخ بداية التصريح:</span>
+              <span class="value">${permit.startDate}</span>
+            </div>
+
+            <div class="field-group">
+              <span class="label">تاريخ إنتهاء التصريح:</span>
+              <span class="value">${permit.endDate}</span>
+            </div>
+          </div>
+
+          <!-- المنشأة المستفيدة -->
+          <div class="card">
+            <div class="card-title">المنشأة المستفيدة</div>
+
+            <div class="field-group">
+              <span class="label">اسم المنشأة:</span>
+              <span class="value-rtl">${permit.facilityName}</span>
+            </div>
+
+            <div class="field-group">
+              <span class="label">رقم المنشأة:</span>
+              <span class="value">${permit.facilityId}</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="help-btn">؟</div>
+
       </body>
       </html>
     `);
 });
 
-// 2. صفحة توليد الـ QR
+// 2. صفحة توليد رمز الـ QR
 app.get('/generate-qr', async (req, res) => {
     const id = req.query.id || '1299';
     const verifyUrl = `https://qr-verifier-mwcx.onrender.com/verify?id=${id}`;
@@ -117,22 +224,21 @@ app.get('/generate-qr', async (req, res) => {
             <html lang="ar" dir="rtl">
             <head>
                 <meta charset="UTF-8">
-                <title>توليد رمز QR - تصريح ${id}</title>
+                <title>توليد رمز QR - أجير</title>
                 <style>
-                    body { font-family: sans-serif; text-align: center; padding: 40px 20px; background-color: #f9f9f9; }
-                    .card { background: white; max-width: 450px; margin: 0 auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-                    img { border: 1px solid #eee; border-radius: 8px; padding: 10px; background: #fff; }
-                    a { color: #0066cc; word-break: break-all; text-decoration: none; }
-                    a:hover { text-decoration: underline; }
+                    body { font-family: sans-serif; text-align: center; padding: 40px 20px; background-color: #f8fafc; }
+                    .card { background: white; max-width: 400px; margin: 0 auto; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+                    img { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; background: #fff; }
+                    a { color: #0284c7; word-break: break-all; text-decoration: none; }
                 </style>
             </head>
             <body>
                 <div class="card">
                     <h3>رمز QR التصريح رقم (${id})</h3>
-                    <div>
-                        <img src="${qrImage}" style="width: 230px; height: 230px;" alt="QR Code" />
+                    <div style="margin: 20px 0;">
+                        <img src="${qrImage}" style="width: 220px; height: 220px;" alt="QR Code" />
                     </div>
-                    <p style="margin-top:20px; color:#555;">قم بمسح الكود بكاميرا الهاتف للتحقق أو افتح الرابط التالي:</p>
+                    <p style="color:#64748b; font-size:14px;">امسح الكود بكاميرا الهاتف أو افتح الرابط:</p>
                     <p><a href="${verifyUrl}" target="_blank">${verifyUrl}</a></p>
                 </div>
             </body>
@@ -143,7 +249,6 @@ app.get('/generate-qr', async (req, res) => {
     }
 });
 
-// 3. تشغيل الخادم
 app.listen(PORT, () => {
-    console.log(`✅ الخادم يعمل الآن على المنفذ: ${PORT}`);
+    console.log(`✅ الخادم يعمل على المنفذ: ${PORT}`);
 });
