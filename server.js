@@ -82,9 +82,7 @@ app.get('/verify', (req, res) => {
 
 // 2. رابط توليد الـ QR لأي تصريح
 app.get('/generate-qr', async (req, res) => {
-    const verifyUrl = `http://localhost:${PORT}/verify?id=${id}`;
-const verifyUrl = `https://qr-verifier-mmcx.onrender.com/verify?id=${id}`;
-
+    const verifyUrl = `https://qr-verifier-mwcx.onrender.com/verify?id=${id}`;
     const verifyUrl = `http://localhost:${PORT}/verify?id=${id}`;
     
     try {
