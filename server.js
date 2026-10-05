@@ -60,10 +60,11 @@ app.get(['/', '/verify'], (req, res) => {
       </head>
       <body>
         <div class="container">
-          <h1 class="header-title">تفاصيل سجل البيانات الإلكتروني</h1>
+          <h1 class="header-title"> تصريح أجير لحلول الموارد
+البشرية  </h1>
           
           <div class="card">
-            <div class="card-header">بيانات الفرد</div>
+            <div class="card-header">معلومات التصريح</div>
             <div class="card-body">
               <div class="grid-2">
                 <div class="field-box"><span class="label">اسم الشخص:</span><span class="value">${permit.employeeName}</span></div>
