@@ -5,20 +5,26 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// 💾 قاعدة بيانات التصاريح - يمكنك إضافة أو تعديل البيانات هنا بسهولة
+// 💾 قاعدة بيانات تجريبية للمستندات والبطاقات
 const permitsDatabase = {
     "1299": {
         id: "1299",
         employeeName: "AHMED NASSER ABDELMONTTALEB ALI",
-        status: "نشط",
+        jobTitle: "فورمان",
+        nationality: "مصر",
+        nationalId: "2560347466",
+        providerName: "نقليات منصور احمد",
+        providerCode: "14-8541201",
+        beneficiaryName: "شركة الريادة الخليجية للمقاولات",
+        beneficiaryCode: "7033892717",
+        contractType: "عقد خدمات",
         startDate: "2026-09-28",
         endDate: "2027-03-27",
-        facilityName: "شركة الريادة الخليجية للمقاولات",
-        facilityId: "7033892717"
+        workLocation: "المملكة العربية السعودية"
     }
 };
 
-// 1. صفحة عرض التحقق من تصريح أجير
+// 1. صفحة عرض تفاصيل المستند / التصريح
 app.get('/verify', (req, res) => {
     const id = req.query.id || '1299';
     const permit = permitsDatabase[id];
@@ -27,9 +33,9 @@ app.get('/verify', (req, res) => {
         return res.status(404).send(`
             <!DOCTYPE html>
             <html lang="ar" dir="rtl">
-            <head><meta charset="UTF-8"><title>التصريح غير موجود</title></head>
+            <head><meta charset="UTF-8"><title>غير موجود</title></head>
             <body style="font-family: sans-serif; text-align: center; padding-top: 50px;">
-                <h2>⚠️️ التصريح رقم (${id}) غير موجود أو ملغى.</h2>
+                <h2>⚠️ السجل المطلوب غير موجود.</h2>
             </body>
             </html>
         `);
@@ -41,171 +47,173 @@ app.get('/verify', (req, res) => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>تصريح أجير لحلول الموارد البشرية</title>
+        <title>تفاصيل البيانات - ${permit.id}</title>
         <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
         <style>
-          * { box-sizing: border-box; }
+          * { box-sizing: border-box; margin: 0; padding: 0; }
           body { 
             font-family: 'Tajawal', sans-serif; 
             background-color: #f8fafc; 
-            margin: 0; 
-            padding: 0; 
-            color: #1e293b;
-          }
-          .top-bar {
-            padding: 20px 40px;
-            background-color: #ffffff;
-            border-bottom: 1px solid #f1f5f9;
-          }
-          .logo-text {
-            color: #0d233a;
-            font-weight: 700;
-            font-size: 24px;
-            letter-spacing: -0.5px;
-          }
-          .logo-sub {
-            font-size: 10px;
-            color: #00a884;
-            display: block;
-            margin-top: -5px;
-          }
-          .main-title {
-            text-align: center;
-            margin: 40px 0 30px;
-            color: #0f172a;
-            font-size: 22px;
-            font-weight: 700;
-            line-height: 1.5;
+            color: #334155;
+            padding: 20px;
           }
           .container {
-            max-width: 460px;
-            margin: 0 auto 50px;
-            padding: 0 15px;
+            max-width: 650px;
+            margin: 30px auto;
+          }
+          .header-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 25px;
           }
           .card {
             background: #ffffff;
-            border-radius: 12px;
-            padding: 24px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
             margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-            border: 1px solid #f1f5f9;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
           }
-          .card-title {
-            text-align: center;
-            color: #64748b;
+          .card-header {
+            background-color: #f1f5f9;
+            padding: 12px 16px;
             font-size: 15px;
             font-weight: 700;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #f8fafc;
-            padding-bottom: 12px;
-          }
-          .field-group {
-            margin-bottom: 16px;
+            color: #475569;
             text-align: center;
+            border-bottom: 1px solid #e2e8f0;
           }
-          .field-group:last-child {
+          .card-body {
+            padding: 16px;
+          }
+          .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 12px;
+          }
+          .grid-2:last-child {
             margin-bottom: 0;
           }
+          .field-box {
+            background: #fafafa;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid #f1f5f9;
+          }
           .label {
-            font-size: 13px;
-            color: #94a3b8;
-            margin-bottom: 6px;
+            font-size: 12px;
+            color: #64748b;
             display: block;
+            margin-bottom: 4px;
           }
           .value {
-            font-size: 15px;
-            color: #1e293b;
-            font-weight: 500;
-            direction: ltr;
-            display: inline-block;
-          }
-          .value-rtl {
-            font-size: 15px;
-            color: #1e293b;
-            font-weight: 500;
-          }
-          .badge-active {
-            background-color: #f0fdf4;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-            padding: 4px 20px;
-            border-radius: 6px;
             font-size: 14px;
-            font-weight: 500;
-            display: inline-block;
+            font-weight: 600;
+            color: #0f172a;
           }
-          .help-btn {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            width: 42px;
-            height: 42px;
-            background-color: #1d3557;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            cursor: pointer;
+          @media (max-width: 480px) {
+            .grid-2 { grid-template-columns: 1fr; }
           }
         </style>
       </head>
       <body>
 
-        <div class="top-bar">
-          <div class="logo-text">أجير<span class="logo-sub">AJEER</span></div>
-        </div>
-
-        <h2 class="main-title">تصريح أجير لحلول الموارد<br>البشرية</h2>
-
         <div class="container">
           
-          <!-- معلومات التصريح -->
+          <h1 class="header-title">تفاصيل سجل البيانات الإلكتروني</h1>
+
+          <!-- بيانات العامل / الفرد -->
           <div class="card">
-            <div class="card-title">معلومات التصريح</div>
-            
-            <div class="field-group">
-              <span class="label">اسم الموظف:</span>
-              <span class="value">${permit.employeeName}</span>
-            </div>
-
-            <div class="field-group">
-              <span class="label">حالة التصريح:</span>
-              <div><span class="badge-active">${permit.status}</span></div>
-            </div>
-
-            <div class="field-group">
-              <span class="label">تاريخ بداية التصريح:</span>
-              <span class="value">${permit.startDate}</span>
-            </div>
-
-            <div class="field-group">
-              <span class="label">تاريخ إنتهاء التصريح:</span>
-              <span class="value">${permit.endDate}</span>
+            <div class="card-header">بيانات الفرد</div>
+            <div class="card-body">
+              <div class="grid-2">
+                <div class="field-box">
+                  <span class="label">اسم الشخص:</span>
+                  <span class="value">${permit.employeeName}</span>
+                </div>
+                <div class="field-box">
+                  <span class="label">المهنة:</span>
+                  <span class="value">${permit.jobTitle}</span>
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="field-box">
+                  <span class="label">رقم الهوية / الإقامة:</span>
+                  <span class="value">${permit.nationalId}</span>
+                </div>
+                <div class="field-box">
+                  <span class="label">الجنسية:</span>
+                  <span class="value">${permit.nationality}</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- المنشأة المستفيدة -->
+          <!-- بيانات مقدم الخدمة -->
           <div class="card">
-            <div class="card-title">المنشأة المستفيدة</div>
-
-            <div class="field-group">
-              <span class="label">اسم المنشأة:</span>
-              <span class="value-rtl">${permit.facilityName}</span>
+            <div class="card-header">بيانات مقدم الخدمة</div>
+            <div class="card-body">
+              <div class="grid-2">
+                <div class="field-box">
+                  <span class="label">المنشأة المقدمة:</span>
+                  <span class="value">${permit.providerName}</span>
+                </div>
+                <div class="field-box">
+                  <span class="label">رقم المنشأة:</span>
+                  <span class="value">${permit.providerCode}</span>
+                </div>
+              </div>
             </div>
+          </div>
 
-            <div class="field-group">
-              <span class="label">رقم المنشأة:</span>
-              <span class="value">${permit.facilityId}</span>
+          <!-- بيانات المستفيد -->
+          <div class="card">
+            <div class="card-header">بيانات المستفيد من الخدمة</div>
+            <div class="card-body">
+              <div class="grid-2">
+                <div class="field-box">
+                  <span class="label">المنشأة المستفيدة:</span>
+                  <span class="value">${permit.beneficiaryName}</span>
+                </div>
+                <div class="field-box">
+                  <span class="label">رقم المنشأة:</span>
+                  <span class="value">${permit.beneficiaryCode}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- بيانات العقد والتاريخ -->
+          <div class="card">
+            <div class="card-header">بيانات الصلاحية والتاريخ</div>
+            <div class="card-body">
+              <div class="grid-2">
+                <div class="field-box">
+                  <span class="label">نوع العقد:</span>
+                  <span class="value">${permit.contractType}</span>
+                </div>
+                <div class="field-box">
+                  <span class="label">مكان العمل:</span>
+                  <span class="value">${permit.workLocation}</span>
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="field-box">
+                  <span class="label">تاريخ بداية العقد:</span>
+                  <span class="value">${permit.startDate}</span>
+                </div>
+                <div class="field-box">
+                  <span class="label">تاريخ نهاية العقد:</span>
+                  <span class="value">${permit.endDate}</span>
+                </div>
+              </div>
             </div>
           </div>
 
         </div>
-
-        <div class="help-btn">؟</div>
 
       </body>
       </html>
@@ -215,40 +223,4 @@ app.get('/verify', (req, res) => {
 // 2. صفحة توليد رمز الـ QR
 app.get('/generate-qr', async (req, res) => {
     const id = req.query.id || '1299';
-    const verifyUrl = `https://qr-verifier-mwcx.onrender.com/verify?id=${id}`;
-
-    try {
-        const qrImage = await QRCode.toDataURL(verifyUrl);
-        res.send(`
-            <!DOCTYPE html>
-            <html lang="ar" dir="rtl">
-            <head>
-                <meta charset="UTF-8">
-                <title>توليد رمز QR - أجير</title>
-                <style>
-                    body { font-family: sans-serif; text-align: center; padding: 40px 20px; background-color: #f8fafc; }
-                    .card { background: white; max-width: 400px; margin: 0 auto; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-                    img { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; background: #fff; }
-                    a { color: #0284c7; word-break: break-all; text-decoration: none; }
-                </style>
-            </head>
-            <body>
-                <div class="card">
-                    <h3>رمز QR التصريح رقم (${id})</h3>
-                    <div style="margin: 20px 0;">
-                        <img src="${qrImage}" style="width: 220px; height: 220px;" alt="QR Code" />
-                    </div>
-                    <p style="color:#64748b; font-size:14px;">امسح الكود بكاميرا الهاتف أو افتح الرابط:</p>
-                    <p><a href="${verifyUrl}" target="_blank">${verifyUrl}</a></p>
-                </div>
-            </body>
-            </html>
-        `);
-    } catch (err) {
-        res.status(500).send('خطأ في توليد الـ QR');
-    }
-});
-
-app.listen(PORT, () => {
-    console.log(`✅ الخادم يعمل على المنفذ: ${PORT}`);
-});
+    const verifyUrl = `
