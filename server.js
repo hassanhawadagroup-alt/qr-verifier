@@ -116,3 +116,6 @@ app.get('/generate-qr', async (req, res) => {
         res.status(500).send('خطأ في توليد الـ QR');
     }
 });
+    console.log(`✅ الخادم يعمل الآن على الرابط: http://localhost:${PORT}`);
+    console.log(`🔗 لتوليد QR افتح: http://localhost:${PORT}/generate-qr?id=1299`);
+});
