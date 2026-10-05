@@ -81,27 +81,38 @@ app.get('/verify', (req, res) => {
 });
 
 // 2. رابط توليد الـ QR لأي تصريح
+// توليد رابط QR لأي تصريح
 app.get('/generate-qr', async (req, res) => {
-const verifyUrl = `https://qr-verifier-mwcx.onrender.com/verify?id=${id}`;    
+    // استخراج id من الرابط أو استخدام قيمة افتراضية 1299
+    const id = req.query.id || '1299';
+    const verifyUrl = `https://qr-verifier-mwcx.onrender.com/verify?id=${id}`;
+
     try {
         const qrImage = await QRCode.toDataURL(verifyUrl);
         res.send(`
-            <html dir="rtl" lang="ar">
-            <head><meta charset="UTF-8"><title>توليد QR</title></head>
-            <body style="font-family: sans-serif; text-align: center; padding: 50px;">
-                <h3>رمز QR الخاص بالتصريح رقم (${id}):</h3>
-                <img src="${qrImage}" style="width: 250px; height: 250px; border: 1px solid #ccc; padding: 10px; border-radius: 8px;" />
+            <!DOCTYPE html>
+            <html lang="ar" dir="rtl">
+            <head>
+                <meta charset="UTF-8">
+                <title>توليد QR</title>
+                <style>
+                    body { font-family: sans-serif; text-align: center; padding-top: 40px; }
+                    img { border: 1px solid #ccc; border-radius: 8px; padding: 10px; }
+                    a { color: #0066cc; word-break: break-all; text-decoration: none; }
+                    a:hover { text-decoration: underline; }
+                </style>
+            </head>
+            <body>
+                <h3>رمز QR الخاص بالتصريح رقم (${id})</h3>
+                <div>
+                    <img src="${qrImage}" style="width: 250px; height: 250px;" alt="QR Code" />
+                </div>
                 <p>قم بمسح الكود أعلاه بكاميرا الهاتف أو اضغط على الرابط:</p>
-                <a href="${verifyUrl}" target="_blank">${verifyUrl}</a>
+                <p><a href="${verifyUrl}" target="_blank">${verifyUrl}</a></p>
             </body>
             </html>
         `);
     } catch (err) {
         res.status(500).send('خطأ في توليد الـ QR');
     }
-});
-
-app.listen(PORT, () => {
-    console.log(`✅ الخادم يعمل الآن على الرابط: http://localhost:${PORT}`);
-    console.log(`🔗 لتوليد QR افتح: http://localhost:${PORT}/generate-qr?id=1299`);
 });
