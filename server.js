@@ -84,8 +84,8 @@ app.get('/verify', (req, res) => {
 // توليد رابط QR لأي تصريح
 app.get('/generate-qr', async (req, res) => {
     // استخراج id من الرابط أو استخدام قيمة افتراضية 1299
-    const id = req.query.id || '1299';
-    const verifyUrl = `https://qr-verifier-mwcx.onrender.com/verify?id=${id}`;
+const id = req.query.id || '1299';
+const verifyUrl = `https://qr-verifier-mwcx.onrender.com/verify?id=${id}`;
 
     try {
         const qrImage = await QRCode.toDataURL(verifyUrl);
