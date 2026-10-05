@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// 💾 قاعدة البيانات المحلية للمستندات
+// 💾 قاعدة البيانات الخاصة بالسجلات
 const permitsDatabase = {
     "1299": {
         id: "1299",
@@ -24,22 +24,10 @@ const permitsDatabase = {
     }
 };
 
-// 1. مسار عرض التفاصيل
-app.get('/verify', (req, res) => {
+// 1. الصفحة الرئيسية والتحقق (تفتح النموذج مباشرة)
+app.get(['/', '/verify'], (req, res) => {
     const id = req.query.id || '1299';
-    const permit = permitsDatabase[id];
-
-    if (!permit) {
-        return res.status(404).send(`
-            <!DOCTYPE html>
-            <html lang="ar" dir="rtl">
-            <head><meta charset="UTF-8"><title>غير موجود</title></head>
-            <body style="font-family: sans-serif; text-align: center; padding-top: 50px;">
-                <h2>⚠️ السجل المطلوب غير موجود.</h2>
-            </body>
-            </html>
-        `);
-    }
+    const permit = permitsDatabase[id] || permitsDatabase['1299'];
 
     res.send(`
       <!DOCTYPE html>
@@ -47,7 +35,7 @@ app.get('/verify', (req, res) => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>تفاصيل البيانات - ${permit.id}</title>
+        <title>تفاصيل سجل البيانات</title>
         <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
         <style>
           * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -57,9 +45,9 @@ app.get('/verify', (req, res) => {
             color: #334155;
             padding: 20px;
           }
-          .container { max-width: 650px; margin: 30px auto; }
-          .header-title { text-align: center; font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 25px; }
-          .card { background: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+          .container { max-width: 650px; margin: 20px auto; }
+          .header-title { text-align: center; font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 20px; }
+          .card { background: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
           .card-header { background-color: #f1f5f9; padding: 12px 16px; font-size: 15px; font-weight: 700; color: #475569; text-align: center; border-bottom: 1px solid #e2e8f0; }
           .card-body { padding: 16px; }
           .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 12px; }
@@ -127,34 +115,49 @@ app.get('/verify', (req, res) => {
     `);
 });
 
-// 2. مسار توليد QR
+// 2. صفحة عرض الـ QR فقط بدون أي روابط نصية
 app.get('/generate-qr', async (req, res) => {
     const id = req.query.id || '1299';
     const verifyUrl = `https://qr-verifier-mwcx.onrender.com/verify?id=${id}`;
 
     try {
-        const qrImage = await QRCode.toDataURL(verifyUrl);
+        const qrImage = await QRCode.toDataURL(verifyUrl, { width: 300 });
         res.send(`
             <!DOCTYPE html>
             <html lang="ar" dir="rtl">
             <head>
                 <meta charset="UTF-8">
-                <title>توليد QR</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>رمز QR</title>
                 <style>
-                    body { font-family: sans-serif; text-align: center; padding: 40px 20px; background-color: #f8fafc; }
-                    .card { background: white; max-width: 400px; margin: 0 auto; padding: 30px; border-radius: 8px; border: 1px solid #e2e8f0; }
-                    img { border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px; }
-                    a { color: #2563eb; word-break: break-all; text-decoration: none; }
+                    body { 
+                      font-family: system-ui, -apple-system, sans-serif; 
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                      min-height: 100vh;
+                      margin: 0;
+                      background-color: #f8fafc; 
+                    }
+                    .card { 
+                      background: white; 
+                      padding: 40px; 
+                      border-radius: 12px; 
+                      border: 1px solid #e2e8f0; 
+                      text-align: center;
+                      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+                    }
+                    img { 
+                      border: 1px solid #cbd5e1; 
+                      border-radius: 8px; 
+                      padding: 12px; 
+                      background: #fff;
+                    }
                 </style>
             </head>
             <body>
                 <div class="card">
-                    <h3>رمز QR للسجل رقم (${id})</h3>
-                    <div style="margin: 20px 0;">
-                        <img src="${qrImage}" style="width: 220px; height: 220px;" alt="QR Code" />
-                    </div>
-                    <p style="color:#64748b; font-size:14px; margin-bottom: 8px;">رابط المعاينة المباشر:</p>
-                    <p><a href="${verifyUrl}" target="_blank">${verifyUrl}</a></p>
+                    <img src="${qrImage}" alt="QR Code" />
                 </div>
             </body>
             </html>
