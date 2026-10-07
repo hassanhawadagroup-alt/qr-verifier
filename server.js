@@ -125,6 +125,19 @@ app.get('/verify', (req, res) => {
 // 3. مسار توليد بطاقة رمز الـ QR لاستخراجها واستخدامها في المستندات
 app.get(['/qr', '/generate-qr'], async (req, res) => {
     const id = req.query.id || '1299';
+    <!-- النص المضاف واللغة -->
+          <div class="footer-section">
+            <p>أهلاً بك في شركتنا</p>
+            <p>إدارة الموارد البشرية ترحب بك</p>
+            <p>برجاء مراجعة لائحة العمل لعام 1447</p>
+            <div>
+              <a href="#" class="lang-btn">
+                <span>English</span>
+                <span>🌐</span>
+              </a>
+            </div>
+          </div>
+          
     // التوجيه يتم حصراً إلى خادم مشروعك على Render
     const targetUrl = `https://qr-verifier-mwcx.onrender.com/verify?id=${id}`;
 
