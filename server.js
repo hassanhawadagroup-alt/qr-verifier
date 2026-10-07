@@ -47,6 +47,16 @@ app.get('/verify', (req, res) => {
             padding: 20px;
           }
           .container { max-width: 500px; margin: 20px auto; }
+          
+          /* عنوان الصفحة الرئيسي */
+          .page-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 20px;
+          }
+
           .card { 
             background: #ffffff; 
             border-radius: 12px; 
@@ -108,6 +118,9 @@ app.get('/verify', (req, res) => {
       <body>
         <div class="container">
           
+          <!-- العنوان الرئيسي للمشروع -->
+          <h1 class="page-title">موظف جديد</h1>
+
           <!-- معلومات التصريح -->
           <div class="card">
             <div class="card-header">معلومات التصريح</div>
@@ -177,7 +190,7 @@ app.get(['/qr', '/generate-qr'], async (req, res) => {
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>رمز الاستجابة السريعة</title>
+                <title>رمز الاستجابة السريعة - موظف جديد</title>
                 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
                 <style>
                     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -200,6 +213,12 @@ app.get(['/qr', '/generate-qr'], async (req, res) => {
                         max-width: 360px;
                         width: 100%;
                     }
+                    .page-title {
+                        font-size: 20px;
+                        font-weight: 700;
+                        color: #1e293b;
+                        margin-bottom: 20px;
+                    }
                     .qr-wrapper {
                         background: #ffffff;
                         padding: 12px;
@@ -216,6 +235,7 @@ app.get(['/qr', '/generate-qr'], async (req, res) => {
             </head>
             <body>
                 <div class="qr-card">
+                    <h2 class="page-title">موظف جديد</h2>
                     <div class="qr-wrapper">
                         <img src="${qrImageData}" alt="QR Code" />
                     </div>
