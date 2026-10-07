@@ -6,7 +6,14 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// 💾 قاعدة البيانات المحلية للسجلات
+// ==========================================
+// 💾 البيانات الأساسية والاعدادات العامة
+// ==========================================
+const DEFAULT_ID = "1299";
+
+// ضع هنا رابط صورة شعار شركتكم المباشر أو مسار الملف المحلي مثل: "/logo.png"
+const LOGO_URL = "https://i.ibb.co/L5vP8hX/logo.png"; 
+
 const permitsDatabase = {
     "1299": {
         id: "1299",
@@ -21,20 +28,12 @@ const permitsDatabase = {
     }
 };
 
-// 🖼️ الشعار بصيغة Base64 المباشرة لضمان التحميل الفوري وعدم الانكشار
-const logoBase64 = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjkwIiBmaWxsPSIjMDY1ZjQ2Ii8+PHBhdGggZD0iTTYwIDEwMCBRIDEwMCAxNDAgMTQwIDEwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjEwIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48Y2lyY2xlIGN4PSI3MCIgY3k9IjgwIiByPSIxMCIgZmlsbD0iI2ZmZmZmZiIvPjxjaXJjbGUgY3g9IjEzMCIgY3k9IjgwIiByPSIxMCIgZmlsbD0iI2ZmZmZmZiIvPjwvc3ZnPg==";
+// ==========================================
+// 🎨 دوال التنسيق وعرض الصفحات
+// ==========================================
 
-// 1. التوجيه التلقائي للمسار الرئيسي إلى صفحة الـ QR
-app.get('/', (req, res) => {
-    res.redirect('/qr');
-});
-
-// 2. مسار عرض تفاصيل السجل
-app.get('/verify', (req, res) => {
-    const id = req.query.id || '1299';
-    const permit = permitsDatabase[id] || permitsDatabase['1299'];
-
-    res.send(`
+function renderVerifyPage(permit) {
+    return `
       <!DOCTYPE html>
       <html lang="ar" dir="rtl">
       <head>
@@ -52,7 +51,7 @@ app.get('/verify', (req, res) => {
           }
           .container { max-width: 500px; margin: 20px auto; }
           
-          /* الهيدر العلوي: شعار فقط في أعلى اليسار وحذف نص "موظف جديد" */
+          /* الهيدر العلوي: الشعار فقط في أعلى اليسار وبدون نص موظف جديد */
           .header-bar {
             display: flex;
             justify-content: flex-end;
@@ -102,7 +101,6 @@ app.get('/verify', (req, res) => {
             border: 1px solid #e2e8f0;
           }
 
-          /* قسم الفوتر والترحيب */
           .footer-section {
             text-align: center;
             margin-top: 30px;
@@ -112,13 +110,12 @@ app.get('/verify', (req, res) => {
             line-height: 1.8;
           }
           .center-logo {
-            max-height: 65px;
+            max-height: 70px;
             width: auto;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
           }
           .footer-section p { margin-bottom: 6px; }
           
-          /* اللوجو المزدوج أسفل الصفحة */
           .bottom-logos-container {
             display: flex;
             justify-content: center;
@@ -145,9 +142,9 @@ app.get('/verify', (req, res) => {
       <body>
         <div class="container">
           
-          <!-- الشعار أعلى اليسار (تم حذف عنوان موظف جديد من هنا) -->
+          <!-- الشعار أعلى اليسار بدون أي نص -->
           <div class="header-bar">
-            <img src="${logoBase64}" alt="لوجو الشركة" class="top-left-logo" />
+            <img src="${LOGO_URL}" alt="لوجو الشركة" class="top-left-logo" />
           </div>
 
           <!-- معلومات التصريح -->
@@ -182,7 +179,7 @@ app.get('/verify', (req, res) => {
           <!-- الفوتر والشعارات -->
           <div class="footer-section">
             <div>
-              <img src="${logoBase64}" alt="لوجو الشركة" class="center-logo" />
+              <img src="${LOGO_URL}" alt="لوجو الشركة" class="center-logo" />
             </div>
             
             <p>أهلاً بك في شركتنا</p>
@@ -197,20 +194,97 @@ app.get('/verify', (req, res) => {
             </div>
 
             <div class="bottom-logos-container">
-              <img src="${logoBase64}" alt="لوجو الشركة 1" class="bottom-logo" />
-              <img src="${logoBase64}" alt="لوجو الشركة 2" class="bottom-logo" />
+              <img src="${LOGO_URL}" alt="لوجو الشركة 1" class="bottom-logo" />
+              <img src="${LOGO_URL}" alt="لوجو الشركة 2" class="bottom-logo" />
             </div>
           </div>
 
         </div>
       </body>
       </html>
-    `);
+    `;
+}
+
+function renderQRPage(qrImageData) {
+    return `
+      <!DOCTYPE html>
+      <html lang="ar" dir="rtl">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>رمز الاستجابة السريعة - موظف جديد</title>
+          <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
+          <style>
+              * { box-sizing: border-box; margin: 0; padding: 0; }
+              body { 
+                  font-family: 'Tajawal', sans-serif; 
+                  background-color: #f1f5f9; 
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  min-height: 100vh;
+                  padding: 20px;
+              }
+              .qr-card { 
+                  background: #ffffff; 
+                  padding: 32px 24px; 
+                  border-radius: 12px; 
+                  border: 1px solid #e2e8f0; 
+                  text-align: center;
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                  max-width: 360px;
+                  width: 100%;
+              }
+              .page-title {
+                  font-size: 20px;
+                  font-weight: 700;
+                  color: #1e293b;
+                  margin-bottom: 20px;
+                  text-align: center;
+              }
+              .qr-wrapper {
+                  background: #ffffff;
+                  padding: 12px;
+                  border-radius: 8px;
+                  border: 1px solid #cbd5e1;
+                  display: inline-block;
+              }
+              .qr-wrapper img {
+                  display: block;
+                  max-width: 100%;
+                  height: auto;
+              }
+          </style>
+      </head>
+      <body>
+          <div class="qr-card">
+              <h2 class="page-title">موظف جديد</h2>
+              <div class="qr-wrapper">
+                  <img src="${qrImageData}" alt="QR Code" />
+              </div>
+          </div>
+      </body>
+      </html>
+    `;
+}
+
+// ==========================================
+// 🛣️ مسارات التطبيق (Routes)
+// ==========================================
+
+app.get('/', (req, res) => {
+    res.redirect('/qr');
 });
 
-// 3. مسار توليد بطاقة رمز الـ QR
+app.get('/verify', (req, res) => {
+    const id = req.query.id || DEFAULT_ID;
+    const permit = permitsDatabase[id] || permitsDatabase[DEFAULT_ID];
+
+    res.send(renderVerifyPage(permit));
+});
+
 app.get(['/qr', '/generate-qr'], async (req, res) => {
-    const id = req.query.id || '1299';
+    const id = req.query.id || DEFAULT_ID;
     const targetUrl = `https://qr-verifier-mwcx.onrender.com/verify?id=${id}`;
 
     try {
@@ -223,68 +297,9 @@ app.get(['/qr', '/generate-qr'], async (req, res) => {
             }
         });
 
-        res.send(`
-            <!DOCTYPE html>
-            <html lang="ar" dir="rtl">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>رمز الاستجابة السريعة - موظف جديد</title>
-                <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
-                <style>
-                    * { box-sizing: border-box; margin: 0; padding: 0; }
-                    body { 
-                        font-family: 'Tajawal', sans-serif; 
-                        background-color: #f1f5f9; 
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        min-height: 100vh;
-                        padding: 20px;
-                    }
-                    .qr-card { 
-                        background: #ffffff; 
-                        padding: 32px 24px; 
-                        border-radius: 12px; 
-                        border: 1px solid #e2e8f0; 
-                        text-align: center;
-                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-                        max-width: 360px;
-                        width: 100%;
-                    }
-                    /* جعل عنوان "موظف جديد" متموضع في المنتصف تماماً أعلى الـ QR */
-                    .page-title {
-                        font-size: 20px;
-                        font-weight: 700;
-                        color: #1e293b;
-                        margin-bottom: 20px;
-                        text-align: center;
-                    }
-                    .qr-wrapper {
-                        background: #ffffff;
-                        padding: 12px;
-                        border-radius: 8px;
-                        border: 1px solid #cbd5e1;
-                        display: inline-block;
-                    }
-                    .qr-wrapper img {
-                        display: block;
-                        max-width: 100%;
-                        height: auto;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="qr-card">
-                    <h2 class="page-title">موظف جديد</h2>
-                    <div class="qr-wrapper">
-                        <img src="${qrImageData}" alt="QR Code" />
-                    </div>
-                </div>
-            </body>
-            </html>
-        `);
+        res.send(renderQRPage(qrImageData));
     } catch (err) {
+        console.error('QR Generation Error:', err);
         res.status(500).send('حدث خطأ أثناء توليد رمز الـ QR');
     }
 });
