@@ -10,9 +10,9 @@ const permitsDatabase = {
     "1299": {
         id: "1299",
         employeeName: "AHMED NASSER ABDELMONTTALEB ALI",
-        jobTitle: "فورمان",
-        nationality: "مصر",
-        nationalId: "2560347466",
+        jobTitle: "نشيط",
+        nationality: "27-03-2027",
+        nationalId: "26-03-2026",
         providerName: "نقليات منصور احمد",
         providerCode: "14-8541201",
         beneficiaryName: "شركة الريادة الخليجية للمقاولات",
@@ -40,7 +40,8 @@ app.get('/verify', (req, res) => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>تفاصيل سجل البيانات - ${permit.id}</title>
+        <title>تصريح أجير لحلول الموارد
+البشرية - ${permit.id}</title>
         <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
         <style>
           * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -65,27 +66,28 @@ app.get('/verify', (req, res) => {
       </head>
       <body>
         <div class="container">
-          <h1 class="header-title">تفاصيل سجل البيانات الإلكتروني</h1>
+          <h1 class="header-title">تصريح أجير لحلول الموارد
+البشرية</h1>
           
           <div class="card">
-            <div class="card-header">بيانات الفرد</div>
+            <div class="card-header">معلومات التصريح</div>
             <div class="card-body">
               <div class="grid-2">
                 <div class="field-box"><span class="label">اسم الشخص:</span><span class="value">${permit.employeeName}</span></div>
-                <div class="field-box"><span class="label">المهنة:</span><span class="value">${permit.jobTitle}</span></div>
+                <div class="field-box"><span class="label">حالة التصريح:</span><span class="value">${permit.jobTitle}</span></div>
               </div>
               <div class="grid-2">
-                <div class="field-box"><span class="label">رقم الهوية / الإقامة:</span><span class="value">${permit.nationalId}</span></div>
-                <div class="field-box"><span class="label">الجنسية:</span><span class="value">${permit.nationality}</span></div>
+                <div class="field-box"><span class="label">تاريخ بداية التصريح::</span><span class="value">${permit.nationalId}</span></div>
+                <div class="field-box"><span class="label">تاريخ إنتهاء التصريح::</span><span class="value">${permit.nationality}</span></div>
               </div>
             </div>
           </div>
 
           <div class="card">
-            <div class="card-header">بيانات مقدم الخدمة</div>
+            <div class="card-header">شركة الإستقدام</div>
             <div class="card-body">
               <div class="grid-2">
-                <div class="field-box"><span class="label">المنشأة المقدمة:</span><span class="value">${permit.providerName}</span></div>
+                <div class="field-box"><span class="label">اسم المنشأة::</span><span class="value">${permit.providerName}</span></div>
                 <div class="field-box"><span class="label">رقم المنشأة:</span><span class="value">${permit.providerCode}</span></div>
               </div>
             </div>
