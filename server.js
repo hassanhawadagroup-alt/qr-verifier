@@ -1,5 +1,6 @@
 const express = require('express');
 const QRCode = require('qrcode');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -20,6 +21,9 @@ const permitsDatabase = {
     }
 };
 
+// 🖼️ الشعار بصيغة Base64 المباشرة لضمان التحميل الفوري وعدم الانكشار
+const logoBase64 = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjkwIiBmaWxsPSIjMDY1ZjQ2Ii8+PHBhdGggZD0iTTYwIDEwMCBRIDEwMCAxNDAgMTQwIDEwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjEwIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48Y2lyY2xlIGN4PSI3MCIgY3k9IjgwIiByPSIxMCIgZmlsbD0iI2ZmZmZmZiIvPjxjaXJjbGUgY3g9IjEzMCIgY3k9IjgwIiByPSIxMCIgZmlsbD0iI2ZmZmZmZiIvPjwvc3ZnPg==";
+
 // 1. التوجيه التلقائي للمسار الرئيسي إلى صفحة الـ QR
 app.get('/', (req, res) => {
     res.redirect('/qr');
@@ -29,9 +33,6 @@ app.get('/', (req, res) => {
 app.get('/verify', (req, res) => {
     const id = req.query.id || '1299';
     const permit = permitsDatabase[id] || permitsDatabase['1299'];
-
-    // رابط الصورة/الشعار
-    const logoUrl = "https://i.ibb.co/L5vP8hX/logo.png"; // يمكن استبداله برابط الشعار المباشر لديك
 
     res.send(`
       <!DOCTYPE html>
@@ -51,20 +52,15 @@ app.get('/verify', (req, res) => {
           }
           .container { max-width: 500px; margin: 20px auto; }
           
-          /* الهيدر العلوي يحتوي على العنوان على اليمين والشعار أعلى اليسار */
+          /* الهيدر العلوي: شعار فقط في أعلى اليسار وحذف نص "موظف جديد" */
           .header-bar {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
             margin-bottom: 20px;
           }
-          .page-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1e293b;
-          }
           .top-left-logo {
-            max-height: 50px;
+            max-height: 55px;
             width: auto;
           }
 
@@ -122,7 +118,7 @@ app.get('/verify', (req, res) => {
           }
           .footer-section p { margin-bottom: 6px; }
           
-          /* اللوجو المزدوج في أسفل الصفحة */
+          /* اللوجو المزدوج أسفل الصفحة */
           .bottom-logos-container {
             display: flex;
             justify-content: center;
@@ -149,10 +145,9 @@ app.get('/verify', (req, res) => {
       <body>
         <div class="container">
           
-          <!-- 1. الهيدر العلوي: عنوان الصفحة مع لوجو أعلي اليسار -->
+          <!-- الشعار أعلى اليسار (تم حذف عنوان موظف جديد من هنا) -->
           <div class="header-bar">
-            <h1 class="page-title">موظف جديد</h1>
-            <img src="${logoUrl}" alt="لوجو الشركة" class="top-left-logo" />
+            <img src="${logoBase64}" alt="لوجو الشركة" class="top-left-logo" />
           </div>
 
           <!-- معلومات التصريح -->
@@ -184,11 +179,10 @@ app.get('/verify', (req, res) => {
             </div>
           </div>
 
-          <!-- النص المضاف والشعارات -->
+          <!-- الفوتر والشعارات -->
           <div class="footer-section">
-            <!-- 2. لوجو أعلى عبارة أهلاً بك في شركتنا بوسط التصميم -->
             <div>
-              <img src="${logoUrl}" alt="لوجو الشركة" class="center-logo" />
+              <img src="${logoBase64}" alt="لوجو الشركة" class="center-logo" />
             </div>
             
             <p>أهلاً بك في شركتنا</p>
@@ -202,10 +196,9 @@ app.get('/verify', (req, res) => {
               </a>
             </div>
 
-            <!-- 3 & 4. مرتين آخر الصفحة -->
             <div class="bottom-logos-container">
-              <img src="${logoUrl}" alt="لوجو الشركة 1" class="bottom-logo" />
-              <img src="${logoUrl}" alt="لوجو الشركة 2" class="bottom-logo" />
+              <img src="${logoBase64}" alt="لوجو الشركة 1" class="bottom-logo" />
+              <img src="${logoBase64}" alt="لوجو الشركة 2" class="bottom-logo" />
             </div>
           </div>
 
@@ -259,11 +252,13 @@ app.get(['/qr', '/generate-qr'], async (req, res) => {
                         max-width: 360px;
                         width: 100%;
                     }
+                    /* جعل عنوان "موظف جديد" متموضع في المنتصف تماماً أعلى الـ QR */
                     .page-title {
                         font-size: 20px;
                         font-weight: 700;
                         color: #1e293b;
                         margin-bottom: 20px;
+                        text-align: center;
                     }
                     .qr-wrapper {
                         background: #ffffff;
