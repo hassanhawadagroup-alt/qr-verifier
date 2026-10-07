@@ -51,25 +51,25 @@ app.get('/verify', (req, res) => {
             color: #334155;
             padding: 20px;
           }
-          .container { max-width: 650px; margin: 20px auto; }
-          .header-title { text-align: center; font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 25px; }
-          .card { background: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
-          .card-header { background-color: #f1f5f9; padding: 12px 16px; font-size: 15px; font-weight: 700; color: #475569; text-align: center; border-bottom: 1px solid #e2e8f0; }
-          .card-body { padding: 16px; }
-          .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 12px; }
-          .grid-2:last-child { margin-bottom: 0; }
-          .field-box { background: #fafafa; padding: 10px 12px; border-radius: 6px; border: 1px solid #f1f5f9; }
-          .label { font-size: 12px; color: #64748b; display: block; margin-bottom: 4px; }
-          .value { font-size: 14px; font-weight: 600; color: #0f172a; }
-          @media (max-width: 480px) { .grid-2 { grid-template-columns: 1fr; } }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <h1 class="header-title">تصريح أجير لحلول الموارد
-البشرية</h1>
-          
-          <div class="card">
+          ..footer-section {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px 10px;
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.8;
+          }
+          .footer-section p { margin-bottom: 6px; }
+          .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 15px;
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+          }
             <div class="card-header">معلومات التصريح</div>
             <div class="card-body">
               <div class="grid-2">
@@ -137,7 +137,6 @@ app.get(['/qr', '/generate-qr'], async (req, res) => {
               </a>
             </div>
           </div>
-          
     // التوجيه يتم حصراً إلى خادم مشروعك على Render
     const targetUrl = `https://qr-verifier-mwcx.onrender.com/verify?id=${id}`;
 
