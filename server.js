@@ -14,9 +14,7 @@ const permitsDatabase = {
         startDate: "26-03-2026",
         endDate: "27-03-2027",
         providerName: "نقليات منصور احمد",
-        providerCode: "14-8541201",
-        beneficiaryName: "شركة الريادة الخليجية للمقاولات",
-        beneficiaryCode: "7033892717"
+        providerCode: "14-8541201"
     }
 };
 
@@ -64,16 +62,24 @@ app.get('/verify', (req, res) => {
             border-bottom: 1px solid #f1f5f9; 
           }
           .card-body { padding: 20px; }
-          .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 12px;
+          .field-box { 
+            margin-bottom: 16px; 
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
           }
-          .grid-2:last-child { margin-bottom: 0; }
-          .field-box { margin-bottom: 8px; }
-          .label { font-size: 13px; color: #94a3b8; display: block; margin-bottom: 4px; }
-          .value { font-size: 14px; font-weight: 600; color: #1e293b; }
+          .field-box:last-child { margin-bottom: 0; }
+          .label { font-size: 13px; color: #94a3b8; display: block; margin-bottom: 6px; }
+          .value { 
+            font-size: 14px; 
+            font-weight: 600; 
+            color: #1e293b; 
+            background-color: #f1f5f9; 
+            padding: 6px 12px; 
+            border-radius: 6px; 
+            display: inline-block;
+            border: 1px solid #e2e8f0;
+          }
           .footer-section {
             text-align: center;
             margin-top: 30px;
@@ -102,14 +108,10 @@ app.get('/verify', (req, res) => {
           <div class="card">
             <div class="card-header">معلومات التصريح</div>
             <div class="card-body">
-              <div class="grid-2">
-                <div class="field-box"><span class="label">اسم الشخص:</span><span class="value">${permit.employeeName}</span></div>
-                <div class="field-box"><span class="label">حالة التصريح:</span><span class="value">${permit.status}</span></div>
-              </div>
-              <div class="grid-2">
-                <div class="field-box"><span class="label">تاريخ بداية التصريح:</span><span class="value">${permit.startDate}</span></div>
-                <div class="field-box"><span class="label">تاريخ إنتهاء التصريح:</span><span class="value">${permit.endDate}</span></div>
-              </div>
+              <div class="field-box"><span class="label">اسم الشخص:</span><span class="value">${permit.employeeName}</span></div>
+              <div class="field-box"><span class="label">حالة التصريح:</span><span class="value">${permit.status}</span></div>
+              <div class="field-box"><span class="label">تاريخ بداية التصريح:</span><span class="value">${permit.startDate}</span></div>
+              <div class="field-box"><span class="label">تاريخ إنتهاء التصريح:</span><span class="value">${permit.endDate}</span></div>
             </div>
           </div>
 
@@ -117,21 +119,8 @@ app.get('/verify', (req, res) => {
           <div class="card">
             <div class="card-header">شركة الإستقدام</div>
             <div class="card-body">
-              <div class="grid-2">
-                <div class="field-box"><span class="label">اسم المنشأة:</span><span class="value">${permit.providerName}</span></div>
-                <div class="field-box"><span class="label">رقم المنشأة:</span><span class="value">${permit.providerCode}</span></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- بيانات المستفيد من الخدمة -->
-          <div class="card">
-            <div class="card-header">بيانات المستفيد من الخدمة</div>
-            <div class="card-body">
-              <div class="grid-2">
-                <div class="field-box"><span class="label">المنشأة المستفيدة:</span><span class="value">${permit.beneficiaryName}</span></div>
-                <div class="field-box"><span class="label">رقم المنشأة:</span><span class="value">${permit.beneficiaryCode}</span></div>
-              </div>
+              <div class="field-box"><span class="label">اسم المنشأة:</span><span class="value">${permit.providerName}</span></div>
+              <div class="field-box"><span class="label">رقم المنشأة:</span><span class="value">${permit.providerCode}</span></div>
             </div>
           </div>
 
