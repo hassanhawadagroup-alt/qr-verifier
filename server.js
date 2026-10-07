@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// 💾 قاعدة البيانات الخاصة بالسجلات
+// 💾 قاعدة البيانات المحلية للسجلات
 const permitsDatabase = {
     "1299": {
         id: "1299",
@@ -24,7 +24,7 @@ const permitsDatabase = {
     }
 };
 
-// 1. الصفحة الرئيسية والتحقق (تفتح النموذج مباشرة)
+// 1. مسار عرض تفاصيل السجل (النموذج)
 app.get(['/', '/verify'], (req, res) => {
     const id = req.query.id || '1299';
     const permit = permitsDatabase[id] || permitsDatabase['1299'];
@@ -60,11 +60,10 @@ app.get(['/', '/verify'], (req, res) => {
       </head>
       <body>
         <div class="container">
-          <h1 class="header-title"> تصريح أجير لحلول الموارد
-البشرية  </h1>
+          <h1 class="header-title">تفاصيل سجل البيانات الإلكتروني</h1>
           
           <div class="card">
-            <div class="card-header">معلومات التصريح</div>
+            <div class="card-header">بيانات الفرد</div>
             <div class="card-body">
               <div class="grid-2">
                 <div class="field-box"><span class="label">اسم الشخص:</span><span class="value">${permit.employeeName}</span></div>
@@ -116,58 +115,6 @@ app.get(['/', '/verify'], (req, res) => {
     `);
 });
 
-// 2. صفحة عرض الـ QR فقط بدون أي روابط نصية
-app.get('/generate-qr', async (req, res) => {
-    const id = req.query.id || '1299';
-    const verifyUrl = `https://qr-verifier-mwcx.onrender.com/verify?id=${id}`;
-
-    try {
-        const qrImage = await QRCode.toDataURL(verifyUrl, { width: 300 });
-        res.send(`
-            <!DOCTYPE html>
-            <html lang="ar" dir="rtl">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>رمز QR</title>
-                <style>
-                    body { 
-                      font-family: system-ui, -apple-system, sans-serif; 
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      min-height: 100vh;
-                      margin: 0;
-                      background-color: #f8fafc; 
-                    }
-                    .card { 
-                      background: white; 
-                      padding: 40px; 
-                      border-radius: 12px; 
-                      border: 1px solid #e2e8f0; 
-                      text-align: center;
-                      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-                    }
-                    img { 
-                      border: 1px solid #cbd5e1; 
-                      border-radius: 8px; 
-                      padding: 12px; 
-                      background: #fff;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="card">
-                    <img src="${qrImage}" alt="QR Code" />
-                </div>
-            </body>
-            </html>
-        `);
-    } catch (err) {
-        res.status(500).send('خطأ في توليد الـ QR');
-    }
-});
-
-app.listen(PORT, () => {
-    console.log(`✅ Server is running on port ${PORT}`);
-});
+// 2. مسار عرض بطاقة الـ QR النظيفة الخالية من الشعارات
+app.get(['/qr', '/generate-qr'], async (req, res) => {
+    const id = req.query.id ||
