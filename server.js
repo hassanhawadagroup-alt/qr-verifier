@@ -10,17 +10,13 @@ const permitsDatabase = {
     "1299": {
         id: "1299",
         employeeName: "AHMED NASSER ABDELMONTTALEB ALI",
-        jobTitle: "نشيط",
-        nationality: "27-03-2027",
-        nationalId: "26-03-2026",
+        status: "نشيط",
+        startDate: "26-03-2026",
+        endDate: "27-03-2027",
         providerName: "نقليات منصور احمد",
         providerCode: "14-8541201",
         beneficiaryName: "شركة الريادة الخليجية للمقاولات",
-        beneficiaryCode: "7033892717",
-        contractType: "عقد خدمات",
-        startDate: "2026-09-28",
-        endDate: "2027-03-27",
-        workLocation: "المملكة العربية السعودية"
+        beneficiaryCode: "7033892717"
     }
 };
 
@@ -29,7 +25,7 @@ app.get('/', (req, res) => {
     res.redirect('/qr');
 });
 
-// 2. مسار عرض تفاصيل السجل (يفتح تلقائياً عند مسح الـ QR)
+// 2. مسار عرض تفاصيل السجل
 app.get('/verify', (req, res) => {
     const id = req.query.id || '1299';
     const permit = permitsDatabase[id] || permitsDatabase['1299'];
@@ -40,8 +36,7 @@ app.get('/verify', (req, res) => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>تصريح أجير لحلول الموارد
-البشرية - ${permit.id}</title>
+        <title>تفاصيل السجل - ${permit.id}</title>
         <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
         <style>
           * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -51,7 +46,35 @@ app.get('/verify', (req, res) => {
             color: #334155;
             padding: 20px;
           }
-          ..footer-section {
+          .container { max-width: 500px; margin: 20px auto; }
+          .card { 
+            background: #ffffff; 
+            border-radius: 12px; 
+            border: 1px solid #e2e8f0; 
+            margin-bottom: 20px; 
+            overflow: hidden; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
+          }
+          .card-header { 
+            background-color: #ffffff; 
+            padding: 16px 20px; 
+            font-size: 16px; 
+            font-weight: 700; 
+            color: #475569; 
+            border-bottom: 1px solid #f1f5f9; 
+          }
+          .card-body { padding: 20px; }
+          .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+          }
+          .grid-2:last-child { margin-bottom: 0; }
+          .field-box { margin-bottom: 8px; }
+          .label { font-size: 13px; color: #94a3b8; display: block; margin-bottom: 4px; }
+          .value { font-size: 14px; font-weight: 600; color: #1e293b; }
+          .footer-section {
             text-align: center;
             margin-top: 30px;
             padding: 20px 10px;
@@ -70,29 +93,38 @@ app.get('/verify', (req, res) => {
             font-weight: 600;
             font-size: 15px;
           }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          
+          <!-- معلومات التصريح -->
+          <div class="card">
             <div class="card-header">معلومات التصريح</div>
             <div class="card-body">
               <div class="grid-2">
                 <div class="field-box"><span class="label">اسم الشخص:</span><span class="value">${permit.employeeName}</span></div>
-                <div class="field-box"><span class="label">حالة التصريح:</span><span class="value">${permit.jobTitle}</span></div>
+                <div class="field-box"><span class="label">حالة التصريح:</span><span class="value">${permit.status}</span></div>
               </div>
               <div class="grid-2">
-                <div class="field-box"><span class="label">تاريخ بداية التصريح::</span><span class="value">${permit.nationalId}</span></div>
-                <div class="field-box"><span class="label">تاريخ إنتهاء التصريح::</span><span class="value">${permit.nationality}</span></div>
+                <div class="field-box"><span class="label">تاريخ بداية التصريح:</span><span class="value">${permit.startDate}</span></div>
+                <div class="field-box"><span class="label">تاريخ إنتهاء التصريح:</span><span class="value">${permit.endDate}</span></div>
               </div>
             </div>
           </div>
 
+          <!-- شركة الاستقدام -->
           <div class="card">
             <div class="card-header">شركة الإستقدام</div>
             <div class="card-body">
               <div class="grid-2">
-                <div class="field-box"><span class="label">اسم المنشأة::</span><span class="value">${permit.providerName}</span></div>
+                <div class="field-box"><span class="label">اسم المنشأة:</span><span class="value">${permit.providerName}</span></div>
                 <div class="field-box"><span class="label">رقم المنشأة:</span><span class="value">${permit.providerCode}</span></div>
               </div>
             </div>
           </div>
 
+          <!-- بيانات المستفيد من الخدمة -->
           <div class="card">
             <div class="card-header">بيانات المستفيد من الخدمة</div>
             <div class="card-body">
@@ -103,29 +135,7 @@ app.get('/verify', (req, res) => {
             </div>
           </div>
 
-          <div class="card">
-            <div class="card-header">بيانات الصلاحية والتاريخ</div>
-            <div class="card-body">
-              <div class="grid-2">
-                <div class="field-box"><span class="label">نوع العقد:</span><span class="value">${permit.contractType}</span></div>
-                <div class="field-box"><span class="label">مكان العمل:</span><span class="value">${permit.workLocation}</span></div>
-              </div>
-              <div class="grid-2">
-                <div class="field-box"><span class="label">تاريخ بداية العقد:</span><span class="value">${permit.startDate}</span></div>
-                <div class="field-box"><span class="label">تاريخ نهاية العقد:</span><span class="value">${permit.endDate}</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </body>
-      </html>
-    `);
-});
-
-// 3. مسار توليد بطاقة رمز الـ QR لاستخراجها واستخدامها في المستندات
-app.get(['/qr', '/generate-qr'], async (req, res) => {
-    const id = req.query.id || '1299';
-    <!-- النص المضاف واللغة -->
+          <!-- النص المضاف ورابط اللغة -->
           <div class="footer-section">
             <p>أهلاً بك في شركتنا</p>
             <p>إدارة الموارد البشرية ترحب بك</p>
@@ -137,7 +147,16 @@ app.get(['/qr', '/generate-qr'], async (req, res) => {
               </a>
             </div>
           </div>
-    // التوجيه يتم حصراً إلى خادم مشروعك على Render
+
+        </div>
+      </body>
+      </html>
+    `);
+});
+
+// 3. مسار توليد بطاقة رمز الـ QR
+app.get(['/qr', '/generate-qr'], async (req, res) => {
+    const id = req.query.id || '1299';
     const targetUrl = `https://qr-verifier-mwcx.onrender.com/verify?id=${id}`;
 
     try {
