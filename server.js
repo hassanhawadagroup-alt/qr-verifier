@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// 💾 قاعدة البيانات المحلية للسجلات
+// 💾 قاعدة البيانات الخاصة بالسجلات
 const permitsDatabase = {
     "1299": {
         id: "1299",
@@ -24,8 +24,13 @@ const permitsDatabase = {
     }
 };
 
-// 1. مسار عرض تفاصيل السجل (النموذج)
-app.get(['/', '/verify'], (req, res) => {
+// 1. إعادة التوجيه التلقائي من الصفحة الرئيسية إلى صفحة QR
+app.get('/', (req, res) => {
+    res.redirect('/qr');
+});
+
+// 2. مسار عرض تفاصيل السجل (النموذج)
+app.get('/verify', (req, res) => {
     const id = req.query.id || '1299';
     const permit = permitsDatabase[id] || permitsDatabase['1299'];
 
@@ -115,10 +120,84 @@ app.get(['/', '/verify'], (req, res) => {
     `);
 });
 
-// 2. مسار عرض بطاقة الـ QR النظيفة الخالية من الشعارات
+// 3. مسار عرض الـ QR بدون أي لوجو أو رابط
 app.get(['/qr', '/generate-qr'], async (req, res) => {
-    const id = req.query.id ||
-    // إعادة توجيه أي زائر يدخل الصفحة الرئيسية مباشرة إلى صفحة الـ QR
-app.get('/', (req, res) => {
-    res.redirect('/qr');
+    const id = req.query.id || '1299';
+    const targetUrl = `https://qr-verifier-mwcx.onrender.com/verify?id=${id}`;
+
+    try {
+        const qrImageData = await QRCode.toDataURL(targetUrl, {
+            width: 260,
+            margin: 2,
+            color: {
+                dark: '#0f172a',
+                light: '#ffffff'
+            }
+        });
+
+        res.send(`
+            <!DOCTYPE html>
+            <html lang="ar" dir="rtl">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>رمز الاستجابة السريعة - ${id}</title>
+                <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
+                <style>
+                    * { box-sizing: border-box; margin: 0; padding: 0; }
+                    body { 
+                        font-family: 'Tajawal', sans-serif; 
+                        background-color: #f1f5f9; 
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        min-height: 100vh;
+                        padding: 20px;
+                    }
+                    .qr-card { 
+                        background: #ffffff; 
+                        padding: 32px 24px; 
+                        border-radius: 12px; 
+                        border: 1px solid #e2e8f0; 
+                        text-align: center;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                        max-width: 360px;
+                        width: 100%;
+                    }
+                    .qr-card h2 {
+                        font-size: 18px;
+                        color: #1e293b;
+                        margin-bottom: 20px;
+                    }
+                    .qr-wrapper {
+                        background: #ffffff;
+                        padding: 12px;
+                        border-radius: 8px;
+                        border: 1px solid #cbd5e1;
+                        display: inline-block;
+                    }
+                    .qr-wrapper img {
+                        display: block;
+                        max-width: 100%;
+                        height: auto;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="qr-card">
+                    <h2>رمز التحقق من السجل</h2>
+                    <div class="qr-wrapper">
+                        <img src="${qrImageData}" alt="QR Code" />
+                    </div>
+                </div>
+            </body>
+            </html>
+        `);
+    } catch (err) {
+        res.status(500).send('حدث خطأ أثناء توليد رمز الـ QR');
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`✅ الخادم يعمل بنجاح على المنفذ: ${PORT}`);
 });
