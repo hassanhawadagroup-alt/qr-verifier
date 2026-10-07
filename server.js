@@ -30,6 +30,9 @@ app.get('/verify', (req, res) => {
     const id = req.query.id || '1299';
     const permit = permitsDatabase[id] || permitsDatabase['1299'];
 
+    // رابط الصورة/الشعار
+    const logoUrl = "https://i.ibb.co/L5vP8hX/logo.png"; // يمكن استبداله برابط الشعار المباشر لديك
+
     res.send(`
       <!DOCTYPE html>
       <html lang="ar" dir="rtl">
@@ -48,13 +51,21 @@ app.get('/verify', (req, res) => {
           }
           .container { max-width: 500px; margin: 20px auto; }
           
-          /* عنوان الصفحة الرئيسي */
+          /* الهيدر العلوي يحتوي على العنوان على اليمين والشعار أعلى اليسار */
+          .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+          }
           .page-title {
-            text-align: center;
             font-size: 22px;
             font-weight: 700;
             color: #1e293b;
-            margin-bottom: 20px;
+          }
+          .top-left-logo {
+            max-height: 50px;
+            width: auto;
           }
 
           .card { 
@@ -94,6 +105,8 @@ app.get('/verify', (req, res) => {
             display: inline-block;
             border: 1px solid #e2e8f0;
           }
+
+          /* قسم الفوتر والترحيب */
           .footer-section {
             text-align: center;
             margin-top: 30px;
@@ -102,7 +115,25 @@ app.get('/verify', (req, res) => {
             font-size: 14px;
             line-height: 1.8;
           }
+          .center-logo {
+            max-height: 65px;
+            width: auto;
+            margin-bottom: 12px;
+          }
           .footer-section p { margin-bottom: 6px; }
+          
+          /* اللوجو المزدوج في أسفل الصفحة */
+          .bottom-logos-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+          }
+          .bottom-logo {
+            max-height: 45px;
+            width: auto;
+          }
+
           .lang-btn {
             display: inline-flex;
             align-items: center;
@@ -118,8 +149,11 @@ app.get('/verify', (req, res) => {
       <body>
         <div class="container">
           
-          <!-- العنوان الرئيسي للمشروع -->
-          <h1 class="page-title">موظف جديد</h1>
+          <!-- 1. الهيدر العلوي: عنوان الصفحة مع لوجو أعلي اليسار -->
+          <div class="header-bar">
+            <h1 class="page-title">موظف جديد</h1>
+            <img src="${logoUrl}" alt="لوجو الشركة" class="top-left-logo" />
+          </div>
 
           <!-- معلومات التصريح -->
           <div class="card">
@@ -150,16 +184,28 @@ app.get('/verify', (req, res) => {
             </div>
           </div>
 
-          <!-- النص المضاف ورابط اللغة -->
+          <!-- النص المضاف والشعارات -->
           <div class="footer-section">
+            <!-- 2. لوجو أعلى عبارة أهلاً بك في شركتنا بوسط التصميم -->
+            <div>
+              <img src="${logoUrl}" alt="لوجو الشركة" class="center-logo" />
+            </div>
+            
             <p>أهلاً بك في شركتنا</p>
             <p>إدارة الموارد البشرية ترحب بك</p>
             <p>برجاء مراجعة لائحة العمل لعام 1447</p>
+
             <div>
               <a href="#" class="lang-btn">
                 <span>English</span>
                 <span>🌐</span>
               </a>
+            </div>
+
+            <!-- 3 & 4. مرتين آخر الصفحة -->
+            <div class="bottom-logos-container">
+              <img src="${logoUrl}" alt="لوجو الشركة 1" class="bottom-logo" />
+              <img src="${logoUrl}" alt="لوجو الشركة 2" class="bottom-logo" />
             </div>
           </div>
 
