@@ -118,3 +118,7 @@ app.get(['/', '/verify'], (req, res) => {
 // 2. مسار عرض بطاقة الـ QR النظيفة الخالية من الشعارات
 app.get(['/qr', '/generate-qr'], async (req, res) => {
     const id = req.query.id ||
+    // إعادة توجيه أي زائر يدخل الصفحة الرئيسية مباشرة إلى صفحة الـ QR
+app.get('/', (req, res) => {
+    res.redirect('/qr');
+});
