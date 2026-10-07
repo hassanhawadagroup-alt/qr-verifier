@@ -144,7 +144,7 @@ function renderVerifyPage(permit) {
           
           <!-- الشعار أعلى اليسار بدون أي نص -->
           <div class="header-bar">
-            <img src="${LOGO_URL}" alt="لوجو الشركة" class="top-left-logo" />
+            <img src="${https://postimg.cc/gxg7wPtc}" alt="لوجو الشركة" class="top-left-logo" />
           </div>
 
           <!-- معلومات التصريح -->
@@ -179,7 +179,7 @@ function renderVerifyPage(permit) {
           <!-- الفوتر والشعارات -->
           <div class="footer-section">
             <div>
-              <img src="${LOGO_URL}" alt="لوجو الشركة" class="center-logo" />
+              <img src="${https://postimg.cc/gxg7wPtc}" alt="لوجو الشركة" class="center-logo" />
             </div>
             
             <p>أهلاً بك في شركتنا</p>
@@ -194,8 +194,8 @@ function renderVerifyPage(permit) {
             </div>
 
             <div class="bottom-logos-container">
-              <img src="${LOGO_URL}" alt="لوجو الشركة 1" class="bottom-logo" />
-              <img src="${LOGO_URL}" alt="لوجو الشركة 2" class="bottom-logo" />
+              <img src="${https://postimg.cc/Ln6wmXvg}" alt="لوجو الشركة 1" class="bottom-logo" />
+              <img src="${https://postimg.cc/5jfkm0hT}" alt="لوجو الشركة 2" class="bottom-logo" />
             </div>
           </div>
 
