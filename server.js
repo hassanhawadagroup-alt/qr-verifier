@@ -77,7 +77,6 @@ app.get('/verify', (req, res) => {
             font-weight: 600; 
             color: #1e293b;
           }
-          /* تظليل رمادي مخصص لحالة التصريح فقط */
           .status-badge {
             background-color: #f1f5f9; 
             padding: 6px 14px; 
@@ -139,23 +138,4 @@ app.get('/verify', (req, res) => {
           </div>
 
           <!-- النص المضاف ورابط اللغة -->
-          <div class="footer-section">
-            <p>أهلاً بك في شركتنا</p>
-            <p>إدارة الموارد البشرية ترحب بك</p>
-            <p>برجاء مراجعة لائحة العمل لعام 1447</p>
-            <div>
-              <a href="#" class="lang-btn">
-                <span>English</span>
-                <span>🌐</span>
-              </a>
-            </div>
-          </div>
-
-        </div>
-      </body>
-      </html>
-    `);
-});
-
-// 3. مسار توليد بطاقة رمز الـ QR
-app.get(['/qr', '/generate-qr'], async (req, res) => {
+          <div class="footer
