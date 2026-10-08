@@ -19,13 +19,13 @@ const LOGO_BOTTOM_2 = "https://i.postimg.cc/5jfkm0hT/logo2.png";
 const permitsDatabase = {
     "1299": {
         id: "1299",
-        employeeName: "AHMED NASSER ABDELMONTTALEB ALI",
+        employeeName: "Mohamed Zakaria",
         status: "نشيط",
         startDate: "26-03-2026",
         endDate: "27-03-2027",
         beneficiaryName: "شركة الريادة الخليجية للمقاولات",
         beneficiaryCode: "7033892717",
-        providerName: "نقليات منصور احمد",
+        providerName: "نقليات الريادة الخليجية",
         providerCode: "14-8541201"
     }
 };
@@ -178,9 +178,9 @@ function renderVerifyPage(permit) {
               <img src="${LOGO_MAIN}" alt="لوجو الشركة" class="center-logo" />
             </div>
             
-            <p>أهلاً بك في شركتنا</p>
-            <p>إدارة الموارد البشرية ترحب بك</p>
-            <p>برجاء مراجعة لائحة العمل لعام 1447</p>
+            <p>سياسات الخصوصية</p>
+            <p>الشروط والاحكام</p>
+            <p>© ١٤٤٧ / أجير حلول الموارد البشرية </p>
 
             <div>
               <a href="#" class="lang-btn">
@@ -208,7 +208,7 @@ function renderQRPage(qrImageData) {
       <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>رمز الاستجابة السريعة - موظف جديد</title>
+          <title> الاستجابة السريعة </title>
           <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
           <style>
               * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -254,7 +254,7 @@ function renderQRPage(qrImageData) {
       </head>
       <body>
           <div class="qr-card">
-              <h2 class="page-title">موظف جديد</h2>
+              <h2 class="page-title"> </h2>
               <div class="qr-wrapper">
                   <img src="${qrImageData}" alt="QR Code" />
               </div>
