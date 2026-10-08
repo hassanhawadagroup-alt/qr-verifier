@@ -1,5 +1,6 @@
 const express = require('express');
 const QRCode = require('qrcode');
+const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,13 +10,17 @@ app.use(express.json());
 // ==========================================
 // 💾 البيانات الأساسية والاعدادات العامة
 // ==========================================
-const DEFAULT_ID = "1299";
+const SPREADSHEET_ID = "1HRHr0MsCeYgoQwH_uzmfseahG8-OvF1cLyhLDUAejxY";
+const GOOGLE_SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv`;
+
+const DEFAULT_ID = "5382";
 
 // 🖼️ الروابط المباشرة للصور
 const LOGO_MAIN = "https://i.postimg.cc/gxg7wPtc/logo.png";
 const LOGO_BOTTOM_1 = "https://i.postimg.cc/Ln6wmXvg/logo1.png";
 const LOGO_BOTTOM_2 = "https://i.postimg.cc/5jfkm0hT/logo2.png";
 
+// البيانات الاحتياطية
 const permitsDatabase = {
     "1299": {
         id: "1299",
@@ -29,6 +34,48 @@ const permitsDatabase = {
         providerCode: "14-8541201"
     }
 };
+
+// ==========================================
+// 🔄 دالة جلب وقراءة البيانات من Google Sheets
+// ==========================================
+async function fetchEmployeeData(targetId) {
+    try {
+        const response = await axios.get(GOOGLE_SHEET_CSV_URL);
+        const rows = response.data.split('\n').map(row => row.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')));
+        
+        if (rows.length < 2) return permitsDatabase[targetId] || permitsDatabase[DEFAULT_ID];
+
+        const headers = rows[0];
+        const idIndex = headers.findIndex(h => h.trim().toLowerCase() === 'id');
+        
+        if (idIndex === -1) return permitsDatabase[targetId] || permitsDatabase[DEFAULT_ID];
+
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            if (row[idIndex] === String(targetId)) {
+                let employee = {};
+                headers.forEach((header, idx) => {
+                    employee[header.trim()] = row[idx] || '';
+                });
+                return {
+                    id: employee.ID || employee.id || targetId,
+                    employeeName: employee.employeeName || '',
+                    status: employee.status || 'نشيط',
+                    startDate: employee.startDate || '',
+                    endDate: employee.endDate || '',
+                    beneficiaryName: employee.beneficiaryName || '',
+                    beneficiaryCode: employee.beneficiaryCode || '',
+                    providerName: employee.providerName || '',
+                    providerCode: employee.providerCode || ''
+                };
+            }
+        }
+        return permitsDatabase[targetId] || permitsDatabase[DEFAULT_ID];
+    } catch (error) {
+        console.error("خطأ في قراءة Google Sheet، تم الرجوع للبيانات المحلية:", error.message);
+        return permitsDatabase[targetId] || permitsDatabase[DEFAULT_ID];
+    }
+}
 
 // ==========================================
 // 🎨 دوال التنسيق وعرض الصفحات
@@ -272,9 +319,9 @@ app.get('/', (req, res) => {
     res.redirect('/qr');
 });
 
-app.get('/verify', (req, res) => {
+app.get('/verify', async (req, res) => {
     const id = req.query.id || DEFAULT_ID;
-    const permit = permitsDatabase[id] || permitsDatabase[DEFAULT_ID];
+    const permit = await fetchEmployeeData(id);
 
     res.send(renderVerifyPage(permit));
 });
