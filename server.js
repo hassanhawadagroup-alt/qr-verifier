@@ -36,27 +36,59 @@ const permitsDatabase = {
 };
 
 // ==========================================
+// 🔄 دالة تفكيك معطيات CSV بشكل آمن
+// ==========================================
+function parseCSV(text) {
+    const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+    return lines.map(line => {
+        const result = [];
+        let cur = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                result.push(cur.trim().replace(/^"|"$/g, ''));
+                cur = '';
+            } else {
+                cur += char;
+            }
+        }
+        result.push(cur.trim().replace(/^"|"$/g, ''));
+        return result;
+    });
+}
+
+// ==========================================
 // 🔄 دالة جلب وقراءة البيانات من Google Sheets
 // ==========================================
 async function fetchEmployeeData(targetId) {
     try {
-        const response = await axios.get(GOOGLE_SHEET_CSV_URL);
-        const rows = response.data.split('\n').map(row => row.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')));
+        const response = await axios.get(GOOGLE_SHEET_CSV_URL, {
+            headers: { 'Cache-Control': 'no-cache' }
+        });
         
-        if (rows.length < 2) return permitsDatabase[targetId] || permitsDatabase[DEFAULT_ID];
+        const rows = parseCSV(response.data);
+        if (!rows || rows.length < 2) {
+            return permitsDatabase[targetId] || permitsDatabase[DEFAULT_ID];
+        }
 
-        const headers = rows[0];
-        const idIndex = headers.findIndex(h => h.trim().toLowerCase() === 'id');
-        
-        if (idIndex === -1) return permitsDatabase[targetId] || permitsDatabase[DEFAULT_ID];
+        const headers = rows[0].map(h => h.trim().toLowerCase());
+        const idIndex = headers.findIndex(h => h === 'id');
+
+        if (idIndex === -1) {
+            return permitsDatabase[targetId] || permitsDatabase[DEFAULT_ID];
+        }
 
         for (let i = 1; i < rows.length; i++) {
             const row = rows[i];
-            if (row[idIndex] === String(targetId)) {
+            if (row[idIndex] && String(row[idIndex]).trim() === String(targetId).trim()) {
                 let employee = {};
-                headers.forEach((header, idx) => {
-                    employee[header.trim()] = row[idx] || '';
+                rows[0].forEach((header, idx) => {
+                    employee[header.trim()] = row[idx] ? row[idx].trim() : '';
                 });
+
                 return {
                     id: employee.ID || employee.id || targetId,
                     employeeName: employee.employeeName || '',
@@ -70,9 +102,10 @@ async function fetchEmployeeData(targetId) {
                 };
             }
         }
+
         return permitsDatabase[targetId] || permitsDatabase[DEFAULT_ID];
     } catch (error) {
-        console.error("خطأ في قراءة Google Sheet، تم الرجوع للبيانات المحلية:", error.message);
+        console.error("خطأ في جلب Google Sheet:", error.message);
         return permitsDatabase[targetId] || permitsDatabase[DEFAULT_ID];
     }
 }
