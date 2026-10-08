@@ -75,7 +75,6 @@ async function fetchEmployeeData(targetId) {
             return permitsDatabase[targetId] || permitsDatabase[DEFAULT_ID];
         }
 
-        // تحويل رؤوس الأعمدة إلى أحرف صغيرة لتفادي مشاكل المطابقة
         const headers = rows[0].map(h => h.trim().toLowerCase());
         const idIndex = headers.findIndex(h => h === 'id');
 
@@ -107,7 +106,7 @@ async function fetchEmployeeData(targetId) {
 
         return permitsDatabase[targetId] || permitsDatabase[DEFAULT_ID];
     } catch (error) {
-        console.error("خطأ في جلب Google Sheet، سيتم استخدام البيانات الاحتياطية:", error.message);
+        console.error("خطأ في جلب Google Sheet:", error.message);
         return permitsDatabase[targetId] || permitsDatabase[DEFAULT_ID];
     }
 }
@@ -185,9 +184,31 @@ function renderVerifyPage(permit) {
             border: 1px solid #e2e8f0;
           }
 
+          .copy-btn {
+            width: 100%;
+            background-color: #1e3a8a;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 20px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Tajawal', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+            margin-bottom: 25px;
+            transition: background-color 0.2s, transform 0.1s;
+          }
+          .copy-btn:hover { background-color: #1d4ed8; }
+          .copy-btn:active { transform: scale(0.98); }
+
           .footer-section {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 10px;
             padding: 20px 10px;
             color: #64748b;
             font-size: 14px;
@@ -256,6 +277,12 @@ function renderVerifyPage(permit) {
             </div>
           </div>
 
+          <!-- زر نسخ رابط الصفحة -->
+          <button class="copy-btn" onclick="copyPageUrl(this)">
+            <span>🔗</span>
+            <span id="btn-text">نسخ رابط الصفحة</span>
+          </button>
+
           <div class="footer-section">
             <div>
               <img src="${LOGO_MAIN}" alt="لوجو الشركة" class="center-logo" />
@@ -279,6 +306,25 @@ function renderVerifyPage(permit) {
           </div>
 
         </div>
+
+        <script>
+          function copyPageUrl(btn) {
+            navigator.clipboard.writeText(window.location.href).then(function() {
+              const btnText = document.getElementById('btn-text');
+              const originalText = btnText.innerText;
+              
+              btnText.innerText = "تم النسخ بنجاح! ✓";
+              btn.style.backgroundColor = "#15803d";
+
+              setTimeout(function() {
+                btnText.innerText = originalText;
+                btn.style.backgroundColor = "#1e3a8a";
+              }, 2000);
+            }).catch(function(err) {
+              console.error('فشل في نسخ الرابط:', err);
+            });
+          }
+        </script>
       </body>
       </html>
     `;
