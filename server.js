@@ -22,16 +22,16 @@ const LOGO_BOTTOM_2 = "https://i.postimg.cc/5jfkm0hT/logo2.png";
 
 // البيانات الاحتياطية
 const permitsDatabase = {
-    "1299": {
-        id: "1299",
-        employeeName: "Mohamed Zakaria",
+    "5382": {
+        id: "5382",
+        employeeName: "MUHAMMAD ASIF FIDA HUSSAIN",
         status: "نشيط",
-        startDate: "26-03-2026",
-        endDate: "27-03-2027",
+        startDate: "2024-02-19",
+        endDate: "2025-02-18",
         beneficiaryName: "شركة الريادة الخليجية للمقاولات",
         beneficiaryCode: "7033892717",
-        providerName: "نقليات الريادة الخليجية",
-        providerCode: "14-8541201"
+        providerName: "شركة تضمين الذكية للمقاولات",
+        providerCode: "543735278"
     }
 };
 
@@ -66,7 +66,8 @@ function parseCSV(text) {
 async function fetchEmployeeData(targetId) {
     try {
         const response = await axios.get(GOOGLE_SHEET_CSV_URL, {
-            headers: { 'Cache-Control': 'no-cache' }
+            headers: { 'Cache-Control': 'no-cache' },
+            timeout: 5000
         });
         
         const rows = parseCSV(response.data);
@@ -74,6 +75,7 @@ async function fetchEmployeeData(targetId) {
             return permitsDatabase[targetId] || permitsDatabase[DEFAULT_ID];
         }
 
+        // تحويل رؤوس الأعمدة إلى أحرف صغيرة لتفادي مشاكل المطابقة
         const headers = rows[0].map(h => h.trim().toLowerCase());
         const idIndex = headers.findIndex(h => h === 'id');
 
@@ -105,7 +107,7 @@ async function fetchEmployeeData(targetId) {
 
         return permitsDatabase[targetId] || permitsDatabase[DEFAULT_ID];
     } catch (error) {
-        console.error("خطأ في جلب Google Sheet:", error.message);
+        console.error("خطأ في جلب Google Sheet، سيتم استخدام البيانات الاحتياطية:", error.message);
         return permitsDatabase[targetId] || permitsDatabase[DEFAULT_ID];
     }
 }
@@ -115,13 +117,14 @@ async function fetchEmployeeData(targetId) {
 // ==========================================
 
 function renderVerifyPage(permit) {
+    const p = permit || {};
     return `
       <!DOCTYPE html>
       <html lang="ar" dir="rtl">
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>تفاصيل السجل - ${permit.id}</title>
+        <title>تفاصيل السجل - ${p.id || ''}</title>
         <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
         <style>
           * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -230,26 +233,26 @@ function renderVerifyPage(permit) {
           <div class="card">
             <div class="card-header">معلومات التصريح</div>
             <div class="card-body">
-              <div class="field-box"><span class="label">اسم الشخص:</span><span class="value">${permit.employeeName}</span></div>
-              <div class="field-box"><span class="label">حالة التصريح:</span><span class="value status-badge">${permit.status}</span></div>
-              <div class="field-box"><span class="label">تاريخ بداية التصريح:</span><span class="value">${permit.startDate}</span></div>
-              <div class="field-box"><span class="label">تاريخ إنتهاء التصريح:</span><span class="value">${permit.endDate}</span></div>
+              <div class="field-box"><span class="label">اسم الشخص:</span><span class="value">${p.employeeName || ''}</span></div>
+              <div class="field-box"><span class="label">حالة التصريح:</span><span class="value status-badge">${p.status || 'نشيط'}</span></div>
+              <div class="field-box"><span class="label">تاريخ بداية التصريح:</span><span class="value">${p.startDate || ''}</span></div>
+              <div class="field-box"><span class="label">تاريخ إنتهاء التصريح:</span><span class="value">${p.endDate || ''}</span></div>
             </div>
           </div>
 
           <div class="card">
             <div class="card-header">المنشأة المستفيدة</div>
             <div class="card-body">
-              <div class="field-box"><span class="label">اسم المنشأة:</span><span class="value">${permit.beneficiaryName}</span></div>
-              <div class="field-box"><span class="label">رقم المنشأة:</span><span class="value">${permit.beneficiaryCode}</span></div>
+              <div class="field-box"><span class="label">اسم المنشأة:</span><span class="value">${p.beneficiaryName || ''}</span></div>
+              <div class="field-box"><span class="label">رقم المنشأة:</span><span class="value">${p.beneficiaryCode || ''}</span></div>
             </div>
           </div>
 
           <div class="card">
             <div class="card-header">شركة الإستقدام</div>
             <div class="card-body">
-              <div class="field-box"><span class="label">اسم المنشأة:</span><span class="value">${permit.providerName}</span></div>
-              <div class="field-box"><span class="label">رقم المنشأة:</span><span class="value">${permit.providerCode}</span></div>
+              <div class="field-box"><span class="label">اسم المنشأة:</span><span class="value">${p.providerName || ''}</span></div>
+              <div class="field-box"><span class="label">رقم المنشأة:</span><span class="value">${p.providerCode || ''}</span></div>
             </div>
           </div>
 
@@ -353,10 +356,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/verify', async (req, res) => {
-    const id = req.query.id || DEFAULT_ID;
-    const permit = await fetchEmployeeData(id);
-
-    res.send(renderVerifyPage(permit));
+    try {
+        const id = req.query.id || DEFAULT_ID;
+        const permit = await fetchEmployeeData(id);
+        res.send(renderVerifyPage(permit));
+    } catch (err) {
+        console.error("Error rendering verify page:", err);
+        res.status(500).send("حدث خطأ أثناء معالجة الطلب.");
+    }
 });
 
 app.get(['/qr', '/generate-qr'], async (req, res) => {
