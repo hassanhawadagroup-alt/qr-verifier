@@ -11,10 +11,10 @@ app.use(express.json());
 // ==========================================
 const DEFAULT_ID = "1299";
 
-// 🖼️ الروابط المباشرة الصحيحة للصور (Direct Image Links)
-const LOGO_MAIN = "https://i.postimg.cc/gxg7wPtc/logo.png";    // الشعار الرئيسي
-const LOGO_BOTTOM_1 = "https://i.postimg.cc/Ln6wmXvg/logo1.png"; // شعار الفوتر الأول
-const LOGO_BOTTOM_2 = "https://i.postimg.cc/5jfkm0hT/logo2.png"; // شعار الفوتر الثاني
+// 🖼️ الروابط المباشرة للصور
+const LOGO_MAIN = "https://i.postimg.cc/gxg7wPtc/logo.png";
+const LOGO_BOTTOM_1 = "https://i.postimg.cc/Ln6wmXvg/logo1.png";
+const LOGO_BOTTOM_2 = "https://i.postimg.cc/5jfkm0hT/logo2.png";
 
 const permitsDatabase = {
     "1299": {
@@ -143,12 +143,10 @@ function renderVerifyPage(permit) {
       <body>
         <div class="container">
           
-          <!-- الشعار أعلى اليسار -->
           <div class="header-bar">
             <img src="${LOGO_MAIN}" alt="لوجو الشركة" class="top-left-logo" />
           </div>
 
-          <!-- معلومات التصريح -->
           <div class="card">
             <div class="card-header">معلومات التصريح</div>
             <div class="card-body">
@@ -159,7 +157,6 @@ function renderVerifyPage(permit) {
             </div>
           </div>
 
-          <!-- المنشأة المستفيدة -->
           <div class="card">
             <div class="card-header">المنشأة المستفيدة</div>
             <div class="card-body">
@@ -168,7 +165,6 @@ function renderVerifyPage(permit) {
             </div>
           </div>
 
-          <!-- شركة الاستقدام -->
           <div class="card">
             <div class="card-header">شركة الإستقدام</div>
             <div class="card-body">
@@ -177,7 +173,6 @@ function renderVerifyPage(permit) {
             </div>
           </div>
 
-          <!-- الفوتر والشعارات -->
           <div class="footer-section">
             <div>
               <img src="${LOGO_MAIN}" alt="لوجو الشركة" class="center-logo" />
@@ -213,3 +208,98 @@ function renderQRPage(qrImageData) {
       <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>رمز الاستجابة السريعة - موظف جديد</title>
+          <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
+          <style>
+              * { box-sizing: border-box; margin: 0; padding: 0; }
+              body { 
+                  font-family: 'Tajawal', sans-serif; 
+                  background-color: #f1f5f9; 
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  min-height: 100vh;
+                  padding: 20px;
+              }
+              .qr-card { 
+                  background: #ffffff; 
+                  padding: 32px 24px; 
+                  border-radius: 12px; 
+                  border: 1px solid #e2e8f0; 
+                  text-align: center;
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                  max-width: 360px;
+                  width: 100%;
+              }
+              .page-title {
+                  font-size: 20px;
+                  font-weight: 700;
+                  color: #1e293b;
+                  margin-bottom: 20px;
+                  text-align: center;
+              }
+              .qr-wrapper {
+                  background: #ffffff;
+                  padding: 12px;
+                  border-radius: 8px;
+                  border: 1px solid #cbd5e1;
+                  display: inline-block;
+              }
+              .qr-wrapper img {
+                  display: block;
+                  max-width: 100%;
+                  height: auto;
+              }
+          </style>
+      </head>
+      <body>
+          <div class="qr-card">
+              <h2 class="page-title">موظف جديد</h2>
+              <div class="qr-wrapper">
+                  <img src="${qrImageData}" alt="QR Code" />
+              </div>
+          </div>
+      </body>
+      </html>
+    `;
+}
+
+// ==========================================
+// 🛣️ مسارات التطبيق (Routes)
+// ==========================================
+
+app.get('/', (req, res) => {
+    res.redirect('/qr');
+});
+
+app.get('/verify', (req, res) => {
+    const id = req.query.id || DEFAULT_ID;
+    const permit = permitsDatabase[id] || permitsDatabase[DEFAULT_ID];
+
+    res.send(renderVerifyPage(permit));
+});
+
+app.get(['/qr', '/generate-qr'], async (req, res) => {
+    const id = req.query.id || DEFAULT_ID;
+    const targetUrl = `https://qr-verifier-mwcx.onrender.com/verify?id=${id}`;
+
+    try {
+        const qrImageData = await QRCode.toDataURL(targetUrl, {
+            width: 280,
+            margin: 2,
+            color: {
+                dark: '#0f172a',
+                light: '#ffffff'
+            }
+        });
+
+        res.send(renderQRPage(qrImageData));
+    } catch (err) {
+        console.error('QR Generation Error:', err);
+        res.status(500).send('حدث خطأ أثناء توليد رمز الـ QR');
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
